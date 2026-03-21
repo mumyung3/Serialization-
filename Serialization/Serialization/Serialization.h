@@ -1,5 +1,11 @@
 #pragma once
 
+#define DEBUG_SERIALIZE
+
+#ifdef DEBUG_SERIALIZE
+extern wchar_t g_function[64];
+#endif
+
 class CPacket {
 
 	enum en_PACKET {
@@ -42,6 +48,7 @@ public:
 	CPacket& operator<<(const float& fValue);
 	CPacket& operator<<(const __int64& iValue);
 	CPacket& operator<<(const double& dValue);
+	int PutData(char* chpSrc, int iSize);
 
 	CPacket& operator>>(unsigned char& byValue);
 	CPacket& operator>>(char& chValue);
@@ -52,8 +59,6 @@ public:
 	CPacket& operator>>(float& fValue);
 	CPacket& operator>>(__int64& iValue);
 	CPacket& operator>>(double& dValue);
-
-	int PutData(char* chpSrc, int iSize);
 	int GetData(char* chpDest, int iSize);
 
 };
