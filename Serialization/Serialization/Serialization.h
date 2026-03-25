@@ -1,6 +1,7 @@
 #pragma once
 
 #define DEBUG_SERIALIZE
+//#undef DEBUG_SERIALIZE
 
 #ifdef DEBUG_SERIALIZE
 extern wchar_t g_function[64];
@@ -22,13 +23,15 @@ public:
 
 	CPacket& operator=(const CPacket& packet) = delete;
 	CPacket(const CPacket& Packet) = delete;
-
+	//수신용 생성자 추가
+	CPacket(char* pData, int dataSize);
 	char* buffer;
 	int front;
 	int rear;
 	bool bError;
 	int bufferSize;
 	int dataSize;
+	bool bIsRef;
 	bool IsEmpty();
 	bool IsFull();
 	int GetUseSize();
@@ -45,6 +48,7 @@ public:
 	CPacket& operator<<(const unsigned short& wValue);
 	CPacket& operator<<(const int& iValue);
 	CPacket& operator<<(const long& lValue);
+	CPacket& operator<<(const unsigned long& ulValue);
 	CPacket& operator<<(const float& fValue);
 	CPacket& operator<<(const __int64& iValue);
 	CPacket& operator<<(const double& dValue);
@@ -56,6 +60,7 @@ public:
 	CPacket& operator>>(unsigned short& wValue);
 	CPacket& operator>>(int& iValue);
 	CPacket& operator>>(long& lValue);
+	CPacket& operator>>(unsigned long& ulValue);
 	CPacket& operator>>(float& fValue);
 	CPacket& operator>>(__int64& iValue);
 	CPacket& operator>>(double& dValue);

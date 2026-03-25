@@ -63,6 +63,15 @@
 
 	void	mpMoveStart(CPacket *clpPacket, BYTE byDirection, short shX, short shY)
 	{
+
+#pragma pack(push, 1)
+struct PacketHeader {
+	char	byCode;			// 패킷코드 0x89 고정.
+	char	bySize;			// 패킷 사이즈.
+	char	byType;			// 패킷타입.
+};
+#pragma pack(pop)
+
 		st_NETWORK_PACKET_HEADER	stPacketHeader;
 		stPacketHeader.byCode = dfNETWORK_PACKET_CODE;
 		stPacketHeader.bySize = 5;

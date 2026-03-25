@@ -1,5 +1,4 @@
-﻿
-#include "Serialization.h"
+﻿#include "Serialization.h"
 #include <iostream>
 #include <Windows.h>
 
@@ -8,7 +7,7 @@
 wchar_t g_function[64];
 #endif
 
-CPacket::CPacket() : front(0), rear(0), bError(false), bufferSize(MAXMESSAGESIZE), dataSize(0) {
+CPacket::CPacket() : front(0), rear(0), bError(false), bufferSize(MAXMESSAGESIZE), dataSize(0), bIsRef(false) {
 	buffer = (char*)malloc(MAXMESSAGESIZE);
 	if (buffer == nullptr) {
 		bError = true;
@@ -19,7 +18,7 @@ CPacket::CPacket() : front(0), rear(0), bError(false), bufferSize(MAXMESSAGESIZE
 	memset(buffer, 0, MAXMESSAGESIZE);
 }
 
-CPacket::CPacket(int bufferSize) : front(0), rear(0), bError(false), bufferSize(bufferSize), dataSize(0) {
+CPacket::CPacket(int bufferSize) : front(0), rear(0), bError(false), bufferSize(bufferSize), dataSize(0), bIsRef(false) {
 	buffer = (char*)malloc(bufferSize);
 	if (buffer == nullptr) {
 		bError = true;
@@ -29,9 +28,13 @@ CPacket::CPacket(int bufferSize) : front(0), rear(0), bError(false), bufferSize(
 	}
 	memset(buffer, 0, bufferSize);
 }
+// 수신용 pData 참조만!
+CPacket::CPacket(char* pData, int dataSize) : front(0), rear(dataSize), bError(false), bufferSize(dataSize), dataSize(dataSize), buffer(pData), bIsRef(true) {
+	// malloc 하지않음!
+}
 
 CPacket::~CPacket() {
-	free(buffer);
+	if (!bIsRef && buffer != nullptr)	free(buffer);
 }
 
 
@@ -312,4 +315,27 @@ int CPacket::GetData(char* chpDest, int iSize) {
 	memcpy(chpDest, buffer + front, iSize);
 	front += iSize;
 	return iSize;
+}
+
+CPacket& CPacket::operator<<(const unsigned long& ulValue) {
+
+#ifdef DEBUG_SERIALIZE
+	swprintf_s(g_function, sizeof(g_function) / sizeof(wchar_t), L"%S", __FUNCTION__);
+#endif
+	if (GetRemainSize() < sizeof(ulValue)) { bError = true; return *this; }
+	memcpy(buffer + rear, &ulValue, sizeof(ulValue));
+	rear += sizeof(ulValue);
+	return *this;
+}
+
+CPacket& CPacket::operator>>(unsigned long& ulValue) {
+
+#ifdef DEBUG_SERIALIZE
+	swprintf_s(g_function, sizeof(g_function) / sizeof(wchar_t), L"%S", __FUNCTION__);
+#endif
+
+	if (GetUseSize() < sizeof(ulValue)) { bError = true; return *this; }
+	memcpy(&ulValue, buffer + front, sizeof(ulValue));
+	front += sizeof(ulValue);
+	return *this;
 }

@@ -40,8 +40,8 @@ int main()
 	while (1) {
 
 		// ·£´ı ÀÔ·Â 
-		//int random = rand() % 3;
-		int random = 2;
+		int random = rand() % 3;
+		//int random = 2;
 
 		switch (random) {
 
